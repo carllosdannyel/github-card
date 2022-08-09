@@ -1,37 +1,46 @@
 import { useEffect, useState } from "react";
-import githubAPI from "../api/githubAPI";
 
 const Card = () => {
-  const [dataRequest, setDataRequest] = useState({ success: {}, error: "" });
-  const [search, setSearch] = useState({ searchName: "", userSelect: "" });
-  const [defaultValue, setDefaultValue] = useState("github");
-  const [userList, setUserList] = useState([]);
-  const [toggleButton, setToggleButton] = useState(false);
+  const [dataRequestList, setDataRequestList] = useState([]);
+  const [dataUser, setDataUser] = useState({});
+  const [userName, setUserName] = useState("github");
+  const [search, setSearch] = useState("");
+  const [select, setSelect] = useState("github");
+  const [userNameList, setUserNameList] = useState([]);
+  // const [toggleButton, setToggleButton] = useState(false);
 
   useEffect(() => {
-    githubAPI(defaultValue).then((response) => {
-      setUserList([response.login]);
-      setDataRequest({ ...dataRequest, success: response });
-    });
-  }, []);
+    fetch(`https://api.github.com/users/${userName}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserNameList([...userNameList, data.login.toLowerCase()]);
+        setDataUser(data);
+        setDataRequestList([...dataRequestList, data]);
+      });
+  }, [userName]);
+
+  console.log("renderizou");
 
   const handleClickSearchUser = () => {
-    setDefaultValue(search);
-    setToggleButton(!toggleButton);
+    setUserName(search.toLowerCase());
+    setSelect(search.toLowerCase())
+    setSearch("");
+  };
+
+  const handleClickSaveCard = () => {
+    console.log("salvou");
   };
 
   return (
     <div className="w-80">
-      <div className={userList ? null : "flex justify-center mb-3"}>
-        {userList && (
+      <div className={userNameList ? null : "flex justify-center mb-3"}>
+        {userNameList && (
           <select
-            value={search.userSelect}
-            onChange={(e) =>
-              setSearch({ ...search, userSelect: e.target.value })
-            }
+            value={select}
+            onChange={(e) => setSelect(e.target.value)}
             className="p-2 w-full my-3 text-center border-none outline-none rounded-md"
           >
-            {userList.map((user) => (
+            {userNameList.map((user) => (
               <option key={user} value={user}>
                 {user}
               </option>
@@ -41,42 +50,46 @@ const Card = () => {
       </div>
       <div className="">
         <input
-          value={search.searchName}
-          onChange={(e) => setSearch({ ...search, searchName: e.target.value })}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           className="p-1 rounded-md w-full mb-3 text-center outline-none"
-          placeholder="Buscar Usuário"
+          placeholder="Nome de Usuário"
         />
       </div>
       <div className="bg-gray-200 w-full h-96 rounded-md flex flex-col items-center p-1">
-        {dataRequest.success && (
-          <div className="flex flex-col py-2 w-full h-full justify-between items-center">
-            <img
-              className="rounded-full"
-              src={dataRequest.success.avatar_url}
-              alt={dataRequest.success.login}
-              width="230px"
-            />
-            <p className="font-bold">{dataRequest.success.name}</p>
-            <p className="text-center">{dataRequest.success.bio}</p>
-            <p>{dataRequest.success.location}</p>
-          </div>
-        )}
+        {dataRequestList
+          .filter((option) => option.login.toLowerCase() === select)
+          .map((user) => (
+            <div
+              key={user}
+              className="flex flex-col py-2 w-full h-full justify-between items-center"
+            >
+              <img
+                className="rounded-full"
+                src={user.avatar_url}
+                alt={user.login}
+                width="230px"
+              />
+              <p className="font-bold">{user.name}</p>
+              <p className="text-center">{user.bio}</p>
+              <p>{user.location}</p>
+            </div>
+          ))}
       </div>
-      {toggleButton ? (
+      <div className="flex">
         <input
-          className="bg-white w-full mt-3 p-1 rounded-md cursor-pointer"
-          type="button"
-          onClick={() => setToggleButton(!toggleButton)}
-          value="SALVAR CARTÃO"
-        />
-      ) : (
-        <input
-          className="bg-white w-full mt-3 p-1 rounded-md cursor-pointer"
+          className="bg-white w-full mt-3 p-1 mr-1 rounded-md cursor-pointer"
           onClick={handleClickSearchUser}
           type="button"
-          value="BUSCAR USUÁRIO"
+          value="BUSCAR"
         />
-      )}
+        <input
+          className="bg-white w-full mt-3 p-1 ml-1 rounded-md cursor-pointer"
+          onClick={handleClickSaveCard}
+          type="button"
+          value="SALVAR"
+        />
+      </div>
     </div>
   );
 };
