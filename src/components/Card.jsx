@@ -10,9 +10,8 @@ const Card = () => {
 
   useEffect(() => {
     githubAPI(defaultValue).then((response) => {
-      setDataRequest({ ...dataRequest, success: response });
       setUserList([response.login]);
-      setDataRequest({ ...dataRequest, error: response.message });
+      setDataRequest({ ...dataRequest, success: response });
     });
   }, []);
 
