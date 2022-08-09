@@ -13,7 +13,7 @@ const Card = () => {
     fetch(`https://api.github.com/users/${userName}`)
       .then((response) => response.json())
       .then((data) => {
-        setUserNameList([...userNameList, data.login.toLowerCase()]);
+        setUserNameList([data.login.toLowerCase(), ...userNameList]);
         setDataUser(data);
         setDataRequestList([...dataRequestList, data]);
       });
