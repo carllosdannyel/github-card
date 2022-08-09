@@ -78,13 +78,13 @@ const Card = () => {
       </div>
       <div className="flex">
         <input
-          className="bg-white w-full mt-3 p-1 mr-1 rounded-md cursor-pointer"
+          className="bg-white w-full mt-3 p-1 font-bold hover:bg-green-600 mr-1 rounded-md cursor-pointer"
           onClick={handleClickSearchUser}
           type="button"
           value="BUSCAR"
         />
         <input
-          className="bg-white w-full mt-3 p-1 ml-1 rounded-md cursor-pointer"
+          className="bg-white w-full mt-3 p-1 font-bold hover:bg-red-600 ml-1 rounded-md cursor-pointer"
           onClick={handleClickSaveCard}
           type="button"
           value="SALVAR"
